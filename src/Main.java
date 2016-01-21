@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
+import java.util.ArrayList;
 
 
 public class Main extends Application {
@@ -26,20 +27,42 @@ public class Main extends Application {
         root.getChildren().add( canvas );
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        Ball ball = new Ball();
-        Mechanics mechanics = new Mechanics(ball);
+        // Key actions
+        ArrayList<String> input = new ArrayList<>();
+        theScene.setOnKeyPressed(event -> {
+            String code = event.getCode().toString();
+            if (!input.contains(code)) input.add(code);
+        });
+        theScene.setOnKeyReleased(event -> {
+            String code = event.getCode().toString();
+            if (input.contains(code)) input.remove(code);
+        });
 
+        //initializing objects
+        Ball ball = new Ball();
+        Paddle paddle = new Paddle();
+        Mechanics mechanics = new Mechanics(ball, paddle);
+
+        //time loop
         Timeline gameLoop = new Timeline();
         gameLoop.setCycleCount( Timeline.INDEFINITE );
-
         KeyFrame kf = new KeyFrame(
             Duration.seconds(0.017),                // 60 FPS
                 event -> {
-                    gc.clearRect(0, 0, canvas.getWidth(),canvas.getHeight());
-                    //ball.clearBall(gc);
+                    // key actions
+                    if (input.contains("LEFT")) paddle.setDx(-paddle.getInit_velocity());
+                    else if (input.contains("RIGHT")) paddle.setDx(paddle.getInit_velocity());
+                    else paddle.setDx(0);
+
+                    //moving objects
                     ball.move();
+                    paddle.move();
                     mechanics.checkCollision();
-                    ball.drawBall(gc);
+
+                    //drawing objects
+                    gc.clearRect(0, 0, canvas.getWidth(),canvas.getHeight());
+                    ball.draw(gc);
+                    paddle.draw(gc);
                 }
             );
 

@@ -4,15 +4,17 @@ import javafx.scene.paint.Color;
 public class Ball extends Sprite {
 
     private int radius;
-    private int dx;
-    private int dy;
 
     public Ball(){
         this.radius = 12;
+        this.width = 2 * this.radius;
+        this.height = 2 * this.radius;
         this.positionX = 100;
         this.positionY = 100;
-        this.dx = 5;
-        this.dy = 5;
+        setBoundaries();
+        this.init_velocity = 5;
+        this.dx = this.init_velocity;
+        this.dy = this.init_velocity;
     }
 
     public int getRadius() {
@@ -23,22 +25,15 @@ public class Ball extends Sprite {
         this.radius = radius;
     }
 
-    public int getDx() { return dx; }
-
-    public void setDx(int dx) {  this.dx = dx; }
-
-    public int getDy() { return dy; }
-
-    public void setDy(int dy) { this.dy = dy; }
-
     public void move() {
         this.positionX = this.positionX + this.dx;
         this.positionY = this.positionY + this.dy;
+        setBoundaries();
     }
 
-    public void drawBall(GraphicsContext gc){
+    public void draw(GraphicsContext gc){
         gc.setFill( Color.RED );
-        gc.fillOval(this.positionX - this.radius, this.positionY - this.radius, 2*this.radius, 2*this.radius);
+        gc.fillOval(this.left_boundary, this.upper_boundary, this.width, this.height);
     }
 
 //    public void clearBall(GraphicsContext gc){
