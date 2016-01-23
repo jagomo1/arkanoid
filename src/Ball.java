@@ -10,8 +10,8 @@ public class Ball extends Sprite {
         this.width = 2 * this.radius;
         this.height = 2 * this.radius;
         this.positionX = 100;
-        this.positionY = 100;
-        setBoundaries();
+        this.positionY = 500;
+        this.setBoundaries();
         this.init_velocity = 5;
         this.dx = this.init_velocity;
         this.dy = this.init_velocity;
@@ -28,11 +28,11 @@ public class Ball extends Sprite {
     public void move() {
         this.positionX = this.positionX + this.dx;
         this.positionY = this.positionY + this.dy;
-        setBoundaries();
+        this.setBoundaries();
     }
 
     public void draw(GraphicsContext gc){
-        gc.setFill( Color.RED );
+        gc.setFill( Color.WHITE );
         gc.fillOval(this.left_boundary, this.upper_boundary, this.width, this.height);
     }
 

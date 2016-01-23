@@ -4,10 +4,10 @@ public class Mechanics {
     private Paddle paddle;
     private Brick[][] bricks;
 
-    public Mechanics(Ball ball, Paddle paddle){//}, Brick[][] bricks){
+    public Mechanics(Ball ball, Paddle paddle, Brick[][] bricks){
         this.ball = ball;
         this.paddle = paddle;
-        //this.bricks = bricks;
+        this.bricks = bricks;
     }
     public void checkCollision(){
         //collision ball vs window boundaries
@@ -42,5 +42,46 @@ public class Mechanics {
             ball.setPositionX(paddle.getRight_boundary() + ball.getRadius());
             ball.setDx(-ball.getDx());
         }
+
+        //collision ball vs bricks
+        for (int i=0;i<Main.BRICKS_ROWS;i++){
+            for (int j=0;j<Main.BRICKS_COLS;j++){
+                if (bricks[i][j].getLifes() > 0){
+                    if (ball.getRight_boundary() > bricks[i][j].getLeft_boundary()
+                            && ball.getLeft_boundary() < bricks[i][j].getRight_boundary()
+                            && ball.getUpper_boundary() <= bricks[i][j].getBottom_boundary()
+                            && ball.getBottom_boundary() > bricks[i][j].getBottom_boundary()){
+                        bricks[i][j].setLifes(bricks[i][j].getLifes()-1);
+                        ball.setPositionY(bricks[i][j].getBottom_boundary() + ball.getRadius());
+                        ball.setDy(-ball.getDy());
+                    }
+                    else if (ball.getRight_boundary() > bricks[i][j].getLeft_boundary()
+                            && ball.getLeft_boundary() < bricks[i][j].getRight_boundary()
+                            && ball.getBottom_boundary() >= bricks[i][j].getUpper_boundary()
+                            && ball.getUpper_boundary() < bricks[i][j].getUpper_boundary()){
+                        bricks[i][j].setLifes(bricks[i][j].getLifes()-1);
+                        ball.setPositionY(bricks[i][j].getUpper_boundary() - ball.getRadius());
+                        ball.setDy(-ball.getDy());
+                    }
+                    else if (ball.getPositionY() > bricks[i][j].getUpper_boundary()
+                            && ball.getPositionY() < bricks[i][j].getBottom_boundary()
+                            && ball.getRight_boundary() >= bricks[i][j].getLeft_boundary()
+                            && ball.getLeft_boundary() < bricks[i][j].getLeft_boundary()){
+                        bricks[i][j].setLifes(bricks[i][j].getLifes()-1);
+                        ball.setPositionX(bricks[i][j].getLeft_boundary() - ball.getRadius());
+                        ball.setDx(-ball.getDx());
+                    }
+                    else if (ball.getPositionY() > bricks[i][j].getUpper_boundary()
+                            && ball.getPositionY() < bricks[i][j].getBottom_boundary()
+                            && ball.getLeft_boundary() <= bricks[i][j].getRight_boundary()
+                            && ball.getRight_boundary() > bricks[i][j].getRight_boundary()){
+                        bricks[i][j].setLifes(bricks[i][j].getLifes()-1);
+                        ball.setPositionX(bricks[i][j].getRight_boundary() + ball.getRadius());
+                        ball.setDx(-ball.getDx());
+                    }
+                }
+            }
+        }
+
     }
 }

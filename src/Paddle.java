@@ -9,7 +9,7 @@ public class Paddle extends Sprite {
         this.height = 25;
         this.positionX = (Main.WINDOW_WIDTH - this.width)/2;
         this.positionY = Main.WINDOW_HEIGTH - this.height - offset;
-        setBoundaries();
+        this.setBoundaries();
         this.init_velocity = 10;
         this.dx = 0;
         this.dy = 0;
@@ -17,7 +17,7 @@ public class Paddle extends Sprite {
 
     public void move() {
         this.positionX = this.positionX + this.dx;
-        setBoundaries();
+        this.setBoundaries();
     }
 
     public void draw(GraphicsContext gc){
