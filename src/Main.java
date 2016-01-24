@@ -70,35 +70,37 @@ public class Main extends Application {
             Duration.seconds(0.017),                // 60 FPS
                 event -> {
                     if (mechanics.getPlayerLifes() > 0) {
-                        // key actions
-                        if (ball.getStarted() == 0 && input.contains("SPACE")) ball.setStarted(1);
-                        if (input.contains("LEFT")) paddle.setDx(-paddle.getInit_velocity());
-                        else if (input.contains("RIGHT")) paddle.setDx(paddle.getInit_velocity());
-                        else paddle.setDx(0);
+                        if (mechanics.getLeftBricks() <= 0){
+                            mechanics.winnerScreen(gc);
+                        }
+                        else {
+                            // key actions
+                            if (ball.getStarted() == 0 && input.contains("SPACE")) ball.setStarted(1);
+                            if (input.contains("LEFT")) paddle.setDx(-paddle.getInit_velocity());
+                            else if (input.contains("RIGHT")) paddle.setDx(paddle.getInit_velocity());
+                            else paddle.setDx(0);
 
-                        //moving objects
-                        ball.move();
-                        paddle.move();
-                        mechanics.checkCollision();
+                            //moving objects
+                            ball.move();
+                            paddle.move();
+                            mechanics.checkCollision();
 
-                        //drawing objects
-                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                        mechanics.drawBar(gc);
-                        ball.draw(gc);
-                        paddle.draw(gc);
-                        for (int i = 0; i < BRICKS_ROWS; i++) {
-                            for (int j = 0; j < BRICKS_COLS; j++) {
-                                if (bricks[i][j].getLifes() > 0) {
-                                    bricks[i][j].draw(gc);
+                            //drawing objects
+                            gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                            mechanics.drawBar(gc);
+                            ball.draw(gc);
+                            paddle.draw(gc);
+                            for (int i = 0; i < BRICKS_ROWS; i++) {
+                                for (int j = 0; j < BRICKS_COLS; j++) {
+                                    if (bricks[i][j].getLifes() > 0) {
+                                        bricks[i][j].draw(gc);
+                                    }
                                 }
                             }
                         }
                     }
                     else{
-                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-                        gc.setFill( Color.RED );
-                        gc.setFont(Font.font(30));
-                        gc.fillText("GAME OVER !", WINDOW_WIDTH/2-100, WINDOW_HEIGTH/2);
+                        mechanics.loserScreen(gc);
                     }
                 }
             );
