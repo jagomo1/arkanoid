@@ -1,3 +1,5 @@
+import javafx.scene.paint.Color;
+
 public class Sprite {
 
     protected int positionX;
@@ -11,6 +13,7 @@ public class Sprite {
     protected int right_boundary;
     protected int upper_boundary;
     protected int bottom_boundary;
+    protected Color color;
 
     public int getHeight() {
         return height;
@@ -76,6 +79,10 @@ public class Sprite {
         this.upper_boundary = this.positionY - this.height/2;
         this.bottom_boundary = this.positionY + this.height/2;
     }
+
+    public Color getColor() { return color; }
+
+    public void setColor(Color color) { this.color = color; }
 
     protected void draw(){}
 

@@ -5,27 +5,31 @@ import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class Main extends Application {
 
+    public int PLAYER_LIFES = 3;
     public static int WINDOW_WIDTH = 1280;
     public static int WINDOW_HEIGTH = 900;
     public static int WINDOW_OFFSET = 25;
+    public static int SCORE_BAR_SIZE = 50;
     public static int BRICKS_COLS = 10;
     public static int BRICKS_ROWS = 10;
     public static int BRICKS_OFFSET_X = (WINDOW_WIDTH - 2*WINDOW_OFFSET - BRICKS_COLS*Brick.BRICK_WIDTH) / (BRICKS_COLS-1);
-    public static int BRICKS_OFFSET_Y = (WINDOW_HEIGTH/2 - WINDOW_OFFSET- BRICKS_ROWS*Brick.BRICK_HEIGHT) / (BRICKS_ROWS-1);
+    public static int BRICKS_OFFSET_Y = (WINDOW_HEIGTH/2 - WINDOW_OFFSET - SCORE_BAR_SIZE - BRICKS_ROWS*Brick.BRICK_HEIGHT) / (BRICKS_ROWS-1);
 
-
-
-    @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Arkanoid");
+
+        Random generator = new Random();
+        int brick_lifes;
 
         Group root = new Group();
         Scene theScene = new Scene( root, WINDOW_WIDTH, WINDOW_HEIGTH, Color.BLACK );
@@ -47,17 +51,17 @@ public class Main extends Application {
         });
 
         //initializing objects
-        Ball ball = new Ball();
         Paddle paddle = new Paddle();
+        Ball ball = new Ball(paddle);
         Brick[][] bricks = new Brick[BRICKS_ROWS][BRICKS_COLS];
         for (int i=0;i<BRICKS_ROWS;i++){
             for (int j = 0; j< BRICKS_COLS; j++){
-                bricks[i][j] = new Brick(WINDOW_OFFSET + j*(Brick.BRICK_WIDTH+BRICKS_OFFSET_X), WINDOW_OFFSET + i*(Brick.BRICK_HEIGHT+BRICKS_OFFSET_Y), 1, 0);
+                brick_lifes = generator.nextInt(2) + 1;
+                bricks[i][j] = new Brick(WINDOW_OFFSET + j*(Brick.BRICK_WIDTH+BRICKS_OFFSET_X), WINDOW_OFFSET + SCORE_BAR_SIZE + i*(Brick.BRICK_HEIGHT+BRICKS_OFFSET_Y), brick_lifes, 0);
             }
         }
 
-
-        Mechanics mechanics = new Mechanics(ball, paddle, bricks);
+        Mechanics mechanics = new Mechanics(PLAYER_LIFES, ball, paddle, bricks);
 
         //time loop
         Timeline gameLoop = new Timeline();
@@ -65,26 +69,36 @@ public class Main extends Application {
         KeyFrame kf = new KeyFrame(
             Duration.seconds(0.017),                // 60 FPS
                 event -> {
-                    // key actions
-                    if (input.contains("LEFT")) paddle.setDx(-paddle.getInit_velocity());
-                    else if (input.contains("RIGHT")) paddle.setDx(paddle.getInit_velocity());
-                    else paddle.setDx(0);
+                    if (mechanics.getPlayerLifes() > 0) {
+                        // key actions
+                        if (ball.getStarted() == 0 && input.contains("SPACE")) ball.setStarted(1);
+                        if (input.contains("LEFT")) paddle.setDx(-paddle.getInit_velocity());
+                        else if (input.contains("RIGHT")) paddle.setDx(paddle.getInit_velocity());
+                        else paddle.setDx(0);
 
-                    //moving objects
-                    ball.move();
-                    paddle.move();
-                    mechanics.checkCollision();
+                        //moving objects
+                        ball.move();
+                        paddle.move();
+                        mechanics.checkCollision();
 
-                    //drawing objects
-                    gc.clearRect(0, 0, canvas.getWidth(),canvas.getHeight());
-                    ball.draw(gc);
-                    paddle.draw(gc);
-                    for (int i=0;i<BRICKS_ROWS;i++){
-                        for (int j = 0; j< BRICKS_COLS; j++){
-                            if (bricks[i][j].getLifes() > 0) {
-                                bricks[i][j].draw(gc);
+                        //drawing objects
+                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                        mechanics.drawBar(gc);
+                        ball.draw(gc);
+                        paddle.draw(gc);
+                        for (int i = 0; i < BRICKS_ROWS; i++) {
+                            for (int j = 0; j < BRICKS_COLS; j++) {
+                                if (bricks[i][j].getLifes() > 0) {
+                                    bricks[i][j].draw(gc);
+                                }
                             }
                         }
+                    }
+                    else{
+                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                        gc.setFill( Color.RED );
+                        gc.setFont(Font.font(30));
+                        gc.fillText("GAME OVER !", WINDOW_WIDTH/2-100, WINDOW_HEIGTH/2);
                     }
                 }
             );
